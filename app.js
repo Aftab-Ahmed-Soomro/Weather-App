@@ -6,7 +6,7 @@ let errorDiv = document.querySelector('.errorDiv');
 
 const fetchData = () => {
     if (search.value.trim() == '') {
-        alert('Please Enter a City');
+        errorDiv.innerHTML = `<h3> Please Enter a City ! </h3>`;
     }
     else {
         errorDiv.innerHTML = '';
@@ -22,7 +22,7 @@ const fetchData = () => {
         .catch ((err)=> {
             console.log(err);
             weather.innerText = ''
-            errorDiv.innerHTML = `<h3> CITY NOT FOUND !! </h3>`;
+            errorDiv.innerHTML = `<h3> CITY NOT FOUND ! </h3>`;
         })
     }
 }
@@ -102,3 +102,29 @@ search.addEventListener('keyup',(e)=>{
     }
 })
 searchBtn.addEventListener('click',fetchData)
+
+let currentLocation = document.getElementById('currentLocation');
+
+function getCurrentLocation() {
+    navigator.geolocation.getCurrentPosition((position)=>{
+        let lon = position.coords.longitude;
+        let lat = position.coords.latitude;
+        let currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_Key}`;
+        fetch(currentUrl)
+        .then((res) => {
+            return res.json();
+        })
+        .then((data)=> {
+            showData(data);
+        })
+        .catch((err)=> {
+            console.log(err);
+        })
+        // console.log(position.coords.longitude, position.coords.latitude);
+    },(err)=>{
+        // console.log(err);
+        errorDiv.innerHTML = `<h3> ${err.message} </h3>`;
+    })
+}
+
+currentLocation.addEventListener('click',getCurrentLocation);
